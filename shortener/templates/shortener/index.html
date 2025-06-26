@@ -1,0 +1,91 @@
+{% extends 'shortener/base.html' %}
+
+{% block title %}🔗 URL Shortener{% endblock %}
+
+{% block content %}
+    <h1>🔗 URL Shortener</h1>
+    
+    <form id="shortenForm">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="url">Enter your long URL:</label>
+            <input type="url" id="url" name="url" class="form-control" 
+                   placeholder="https://example.com/very/long/url" required>
+        </div>
+        <button type="submit" class="btn">Shorten URL</button>
+    </form>
+    
+    <div id="result" class="result">
+        <h3>Your shortened URL:</h3>
+        <div id="shortUrl" class="short-url"></div>
+        <button id="copyBtn" class="btn btn-secondary">Copy to Clipboard</button>
+        <button id="statsBtn" class="btn btn-secondary">View Statistics</button>
+        <div class="stats">
+            <p><strong>Original URL:</strong> <span id="originalUrl"></span></p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentShortCode = '';
+    
+    document.getElementById('shortenForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const url = document.getElementById('url').value;
+        const button = e.target.querySelector('button');
+        const originalText = button.textContent;
+        
+        button.textContent = 'Shortening...';
+        button.disabled = true;
+        
+        try {
+            const response = await fetch('/shorten/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({url: url})
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                document.getElementById('shortUrl').textContent = data.short_url;
+                document.getElementById('originalUrl').textContent = url;
+                document.getElementById('result').style.display = 'block';
+                currentShortCode = data.short_code;
+            } else {
+                alert('Error: ' + data.error);
+            }
+        } catch (error) {
+            alert('Error shortening URL. Please try again.');
+        }
+        
+        button.textContent = originalText;
+        button.disabled = false;
+    });
+    
+    document.getElementById('copyBtn').addEventListener('click', function() {
+        const shortUrl = document.getElementById('shortUrl').textContent;
+        navigator.clipboard.writeText(shortUrl).then(function() {
+            const btn = document.getElementById('copyBtn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Copied!';
+            btn.style.background = 'linear-gradient(45deg, #2ecc71, #27ae60)';
+            setTimeout(function() {
+                btn.textContent = originalText;
+                btn.style.background = 'linear-gradient(45deg, #27ae60, #2ecc71)';
+            }, 2000);
+        });
+    });
+    
+    document.getElementById('statsBtn').addEventListener('click', function() {
+        if (currentShortCode) {
+            window.open('/stats/' + currentShortCode + '/', '_blank');
+        }
+    });
+</script>
+{% endblock %}

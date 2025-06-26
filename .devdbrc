@@ -1,0 +1,6 @@
+[
+  {
+    "type": "sqlite",
+    "path": "c:\\prg\\djang\\url_shortener\\db.sqlite3"
+  }
+]

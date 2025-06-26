@@ -1,0 +1,17 @@
+{% extends 'shortener/base.html' %}
+
+{% block title %}URL Statistics - {{ url.short_code }}{% endblock %}
+
+{% block content %}
+    <h1>📊 URL Statistics</h1>
+    
+    <div class="stats">
+        <p><strong>Short Code:</strong> {{ url.short_code }}</p>
+        <p><strong>Short URL:</strong> <a href="{{ short_url }}" target="_blank" style="color: #fff;">{{ short_url }}</a></p>
+        <p><strong>Original URL:</strong> <a href="{{ url.original_url }}" target="_blank" style="color: #fff;">{{ url.original_url }}</a></p>
+        <p><strong>Total Clicks:</strong> {{ url.clicks }}</p>
+        <p><strong>Created:</strong> {{ url.created_at|date:"F d, Y g:i A" }}</p>
+    </div>
+    
+    <a href="/" class="back-link">← Create another short URL</a>
+{% endblock %}
