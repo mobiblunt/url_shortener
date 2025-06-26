@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 import string
 import random
 
@@ -9,8 +10,16 @@ class URL(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     clicks = models.PositiveIntegerField(default=0)
     
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    is_public = models.BooleanField(default=True)  # Public or private URL
+
+
     class Meta:
         ordering = ['-created_at']
+
+    def can_view_stats(self, user):
+        """Check if user can view statistics"""
+        return self.is_public or self.user == user or user.is_staff
     
     def __str__(self):
         return f"{self.short_code} -> {self.original_url}"

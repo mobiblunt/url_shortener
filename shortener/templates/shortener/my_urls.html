@@ -1,0 +1,35 @@
+{% extends 'shortener/base.html' %}
+
+{% block title %}My URLs - URL Shortener{% endblock %}
+
+{% block content %}
+    <h1>📊 My URLs</h1>
+    
+    {% if urls %}
+        <div style="margin-bottom: 20px;">
+            <a href="{% url 'index' %}" class="btn btn-secondary">Create New URL</a>
+        </div>
+        
+        {% for url in urls %}
+            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong>{{ request.build_absolute_uri }}{{ url.short_code }}/</strong>
+                        <br>
+                        <small>{{ url.original_url|truncatechars:60 }}</small>
+                        <br>
+                        <small>{{ url.clicks }} clicks • Created {{ url.created_at|date:"M d, Y" }}</small>
+                    </div>
+                    <div>
+                        <a href="{% url 'url_stats' url.short_code %}" class="btn btn-secondary" style="font-size: 12px; padding: 5px 10px;">
+                            View Stats
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>You haven't created any URLs yet.</p>
+        <a href="{% url 'index' %}" class="btn">Create Your First URL</a>
+    {% endif %}
+{% endblock %}

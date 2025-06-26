@@ -145,6 +145,18 @@
 </head>
 <body>
     <div class="container">
+        {% if user.is_authenticated %}
+    <div style="text-align: center; margin-bottom: 20px;">
+        <span>Welcome, {{ user.username }}!</span> |
+        <a href="{% url 'my_urls' %}" style="color: #fff;">My URLs</a> |
+        <a href="{% url 'logout' %}?next={% url 'index' %}" style="color: #fff;">Logout</a>
+    </div>
+{% else %}
+    <div style="text-align: center; margin-bottom: 20px;">
+        <a href="{% url 'login' %}" style="color: #fff;">Login</a> |
+        <a href="{% url 'register' %}" style="color: #fff;">Register</a>
+    </div>
+{% endif %}
         {% block content %}
         {% endblock %}
     </div>
