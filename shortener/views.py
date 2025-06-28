@@ -11,6 +11,7 @@ from .forms import CustomUserCreationForm
 import json
 from .models import URL
 from .forms import URLForm
+from django.urls import reverse_lazy
 
 class CustomLogoutView(LogoutView):
     def get(self, request, *args, **kwargs):
@@ -18,7 +19,13 @@ class CustomLogoutView(LogoutView):
 
 class CustomLoginView(LoginView):
     template_name = 'shortener/login.html'
-    redirect_authenticated_user = True
+    def get_success_url(self):
+        # Check if there's a 'next' parameter
+        next_page = self.request.GET.get('next') or self.request.POST.get('next')
+        if next_page:
+            return next_page
+        # Otherwise redirect to your default page
+        return reverse_lazy('index')
 
 def register(request):
     if request.method == 'POST':

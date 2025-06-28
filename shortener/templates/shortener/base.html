@@ -149,7 +149,11 @@
     <div style="text-align: center; margin-bottom: 20px;">
         <span>Welcome, {{ user.username }}!</span> |
         <a href="{% url 'my_urls' %}" style="color: #fff;">My URLs</a> |
-        <a href="{% url 'logout' %}?next={% url 'index' %}" style="color: #fff;">Logout</a>
+        <form method="post" action="{% url 'logout' %}" style="display: inline;">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{% url 'index' %}">
+    <button type="submit" class="btn-link">Logout</button>
+</form>
     </div>
 {% else %}
     <div style="text-align: center; margin-bottom: 20px;">
